@@ -5,7 +5,7 @@ var PORT = process.env.PORT || 8080;
 var app = express();
 
 // ALWAYS setup the alexa app and attach it to express before anything else.
-var alexaApp = new alexa.app("santa-time");
+var alexaApp = new alexa.app("test");
 
 alexaApp.express({
   expressApp: app,
@@ -26,6 +26,8 @@ alexaApp.express({
 // from here on you can setup any other express routes or middlewares as normal
 app.set("view engine", "ejs");
 
+
+
 app.pre = function(request, response, type) {
   if (request.applicationId != "amzn1.ask.skill.0471c64a-5dd7-4470-ad36-03134c6c68bc") {
     // fail ungracefully
@@ -42,6 +44,20 @@ alexaApp.sessionEnded(function(request, response) {
   logout(request.userId);
   // no response required
 });
+
+
+alexaApp.dictionary = { "names": ["matt", "joe", "bob", "bill", "mary", "jane", "dawn"] };
+
+alexaApp.intent("nameIntent", {
+    "slots": { "NAME": "LITERAL" },
+    "utterances": [
+      "my {name is|name's} {names|NAME}", "set my name to {names|NAME}"
+    ]
+  },
+  function(request, response) {
+    response.say("Success!");
+  }
+);
 
 
 alexaApp.intent("Christmas", {
@@ -80,9 +96,6 @@ alexaApp.intent("AMAZON.HelpIntent",{
   	response.say(helpOutput).reprompt(reprompt).shouldEndSession(false);
   	return
 });
-
-
-
 
 
 
